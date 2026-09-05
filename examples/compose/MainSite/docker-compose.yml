@@ -1,3 +1,4 @@
+# Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   mainsite:
     image: ghcr.io/cngal/cngalwebsite-mainsite:${IMAGE_TAG:-latest}
@@ -5,6 +6,11 @@ services:
     hostname: mainsite
 
     restart: unless-stopped
+
+    pre_start:
+      - image: busybox
+        command: ["chown", "-R", "1654:1654", "/home/app/.aspnet/DataProtection-Keys"]
+        user: root
 
     ports:
       - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-2010}:8080"

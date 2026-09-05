@@ -1,10 +1,14 @@
 services:
-  apiserver:
-    image: littlefishtentears/cngalwebsiteexamineservice:${IMAGE_TAG:-latest}
-    container_name: examineservice
+  examineservice:
+    image: ghcr.io/cngal/cngalwebsiteexamineservice:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-examineservice}
     hostname: examineservice
+
     restart: unless-stopped
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       # 事件总线 主机名称
@@ -20,16 +24,9 @@ services:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - ${DATA_DIR}/SensitiveWords:/app/Data/SensitiveWords
+      - ${DATA_DIR:?DATA_DIR is required}/SensitiveWords:/app/Data/SensitiveWords:ro
 
     deploy:
       resources:
         limits:
-          memory: ${resources_limits_memory:-100m}
-
-    networks:
-      - web
-
-networks:
-  web:
-    external: true
+          memory: ${RESOURCES_LIMITS_MEMORY:-${resources_limits_memory:-100m}}

@@ -1,63 +1,69 @@
+# Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   drawingbed:
-    image: littlefishtentears/cngalwebsitedrawingbed:${IMAGE_TAG:-latest}
-    container_name: drawingbed
-    environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      # Ids 地址
-      - Authority=${Authority:-https://oauth2.cngal.org}
-      # 阿里云OSS相关
-      - OSSEndpoint=${OSSEndpoint}
-      - OSSBucketName=${OSSBucketName}
-      - OSSAccessKeyId=${OSSAccessKeyId}
-      - OSSAccessKeySecret=${OSSAccessKeySecret}
-      # 数据库连接字符串
-      - DefaultDBConnection=${DefaultDBConnection}
-      # 腾讯云COS
-      - Tencent_COS_REGION=${Tencent_COS_REGION}
-      - Tencent_SECRET_ID=${Tencent_SECRET_ID}
-      - Tencent_SECRET_KEY=${Tencent_SECRET_KEY}
-      - Tencent_BucketName=${Tencent_BucketName}
-      # 图仓
-      - TucangCCAPIToken=${TucangCCAPIToken}
-      - TucangCCAPIUrl=${TucangCCAPIUrl:-https://tucang.cc/api/v1/upload}
-      - CustomTucangCCUrl=${CustomTucangCCUrl:-https://tucang.cngal.top/api/image/show/}
-      # 音频 baseUrl
-      - AudioUrl=${AudioUrl:-https://res.cngal.org/}
-      # 图片 baseUrl
-      - ImagesUrl=${ImagesUrl:-https://image.cngal.org/}
+    image: ghcr.io/cngal/cngalwebsitedrawingbed:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-drawingbed}
     hostname: drawingbed
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+
+    restart: unless-stopped
+
+    pre_start:
+      - image: busybox
+        command: ["chown", "-R", "1654:1654", "/home/app/.aspnet/DataProtection-Keys", "/app/wwwroot"]
+        user: root
+
     ports:
-      - ${PORT:-2003}:8080
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-2003}:8080"
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+
+      # Ids 地址
+      Authority: ${Authority:-https://oauth2.cngal.org}
+
+      # 阿里云OSS相关
+      OSSEndpoint: ${OSSEndpoint}
+      OSSBucketName: ${OSSBucketName}
+      OSSAccessKeyId: ${OSSAccessKeyId}
+      OSSAccessKeySecret: ${OSSAccessKeySecret}
+
+      # 数据库连接字符串
+      DefaultDBConnection: ${DefaultDBConnection}
+
+      # 腾讯云COS
+      Tencent_COS_REGION: ${Tencent_COS_REGION}
+      Tencent_SECRET_ID: ${Tencent_SECRET_ID}
+      Tencent_SECRET_KEY: ${Tencent_SECRET_KEY}
+      Tencent_BucketName: ${Tencent_BucketName}
+
+      # 图仓
+      TucangCCAPIToken: ${TucangCCAPIToken}
+      TucangCCAPIUrl: ${TucangCCAPIUrl:-https://tucang.cc/api/v1/upload}
+      CustomTucangCCUrl: ${CustomTucangCCUrl:-https://tucang.cngal.top/api/image/show/}
+
+      # 音频 baseUrl
+      AudioUrl: ${AudioUrl:-https://res.cngal.org/}
+      # 图片 baseUrl
+      ImagesUrl: ${ImagesUrl:-https://image.cngal.org/}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/healthz"]
+
     volumes:
-      - drawingbed-DataProtection-Keys:/home/app/.aspnet/DataProtection-Keys
-      - drawingbed-wwwroot:/app/wwwroot
+      - ${DATA_PROTECTION_KEYS_DIR:-drawingbed-DataProtection-Keys}:/home/app/.aspnet/DataProtection-Keys
+      - ${WWWROOT_DIR:-drawingbed-wwwroot}:/app/wwwroot
+
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-500m}
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
-
 
 volumes:
   drawingbed-DataProtection-Keys:
   drawingbed-wwwroot:
-
-networks:
-  web:
-    external: true

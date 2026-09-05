@@ -1,73 +1,73 @@
+# Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   robotclientx:
-    image: littlefishtentears/cngalwebsiterobotclientx:${IMAGE_TAG:-latest}
-    container_name: robotclientx
-    environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      # 账号
-      - QQ=${QQ}
-      # 称呼
-      - RobotName=${RobotName:-看板娘}
-      # 接收预警的QQ群
-      - WarningQQGroup=${WarningQQGroup}
-      # OneBot Host（只支持IP）
-      - OneBotHost=${OneBotHost}
-      # OneBot Websocket端口（必填）
-      - OneBotWsPort=${OneBotWsPort}
-      # OneBot Http端口（必填）
-      - OneBotHttpPort=${OneBotHttpPort}
-      # OneBot Token
-      - OneBotToken=${OneBotToken}
-      # CnGal资料站 API
-      - WebApiPath=${WebApiPath:-https://api.cngal.org/}
-      # 网站名称
-      - WebSiteName=${WebSiteName:-看板娘在这里哦}
-      # 网站背景图
-      - WebSiteImage=${WebSiteImage:-https://res.cngal.org/_content/CnGalWebSite.Shared/images/game_head.png}
-      # 网站主题颜色
-      - WebSiteTheme=${WebSiteTheme:-#f06292}
-      # 事件总线
-      - EventBus_HostName=${EventBus_HostName}
-      - EventBus_Port=${EventBus_Port:-5672}
-      - EventBus_UserName=${EventBus_UserName}
-      - EventBus_Password=${EventBus_Password}
-      # 群聊历史记录最大条数
-      - GroupHistoryMax=${GroupHistoryMax:-30}
-      # 群聊历史记录达到最大条数后，保留最近N条消息
-      - GroupHistoryMin=${GroupHistoryMin:-10}
-      # 禁用个性化系统
-      - DisablePersonalizedSystem=${DisablePersonalizedSystem:-false}
+    image: ghcr.io/cngal/cngalwebsiterobotclientx:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-robotclientx}
     hostname: robotclientx
-    restart: always
+
+    restart: unless-stopped
+
+    pre_start:
+      - image: busybox
+        command: ["chown", "-R", "1654:1654", "/home/app/.aspnet/DataProtection-Keys", "/app/wwwroot/Data"]
+        user: root
+
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-2004}:8080"
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      # 账号
+      QQ: ${QQ}
+      # 称呼
+      RobotName: ${RobotName:-看板娘}
+      # 接收预警的QQ群
+      WarningQQGroup: ${WarningQQGroup}
+      # OneBot Host（只支持IP）
+      OneBotHost: ${OneBotHost}
+      # OneBot Websocket端口（必填）
+      OneBotWsPort: ${OneBotWsPort}
+      # OneBot Http端口（必填）
+      OneBotHttpPort: ${OneBotHttpPort}
+      # OneBot Token
+      OneBotToken: ${OneBotToken}
+      # CnGal资料站 API
+      WebApiPath: ${WebApiPath:-https://api.cngal.org/}
+      # 网站名称
+      WebSiteName: ${WebSiteName:-看板娘在这里哦}
+      # 网站背景图
+      WebSiteImage: ${WebSiteImage:-https://res.cngal.org/_content/CnGalWebSite.Shared/images/game_head.png}
+      # 网站主题颜色
+      WebSiteTheme: "${WebSiteTheme:-#f06292}"
+      # 事件总线
+      EventBus_HostName: ${EventBus_HostName}
+      EventBus_Port: ${EventBus_Port:-5672}
+      EventBus_UserName: ${EventBus_UserName}
+      EventBus_Password: ${EventBus_Password}
+      # 群聊历史记录最大条数
+      GroupHistoryMax: ${GroupHistoryMax:-30}
+      # 群聊历史记录达到最大条数后，保留最近N条消息
+      GroupHistoryMin: ${GroupHistoryMin:-10}
+      # 禁用个性化系统
+      DisablePersonalizedSystem: ${DisablePersonalizedSystem:-false}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/healthz"]
+
+    volumes:
+      - ${DATA_PROTECTION_KEYS_DIR:-robotclientx-DataProtection-Keys}:/home/app/.aspnet/DataProtection-Keys
+      - ${MNT_DIR:-/mnt/docker}/robotclientx/Data:/app/wwwroot/Data
+
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-200m}
-    ports:
-      - ${PORT:-2004}:8080
-    volumes:
-      - drawingbed-DataProtection-Keys:/home/app/.aspnet/DataProtection-Keys
-      - ${MNT_DIR:-/mnt/docker}/robotclientx/Data:/app/wwwroot/Data
-    labels:
-      # traefik
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.robotclientx.rule=Host(`${HOST:-robotclientx.localhost}`)
-      - traefik.http.services.robotclientx.loadbalancer.server.port=8080
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-    networks:
-      - web
 
 volumes:
-  drawingbed-DataProtection-Keys:
-
-networks:
-  web:
-    external: true
+  robotclientx-DataProtection-Keys:
