@@ -9,7 +9,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsiteidentityserver
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsite-identityserver
 
 concurrency:
   group: build-push-identityserver

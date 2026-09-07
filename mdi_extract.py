@@ -1,6 +1,7 @@
 import os
 import pathlib
 import re
+import tempfile
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -18,12 +19,26 @@ def load_mdi_js(repo_root: pathlib.Path) -> str:
     cache_dir = repo_root / ".cache"
     cache_file = cache_dir / f"mdi-{MDI_VERSION}.js"
     if cache_file.exists():
-        return cache_file.read_text(encoding="utf-8")
+        js = cache_file.read_text(encoding="utf-8")
+        if not parse_exports(js):
+            raise ValueError(f"no MDI exports found in cache: {cache_file}")
+        return js
 
     cache_dir.mkdir(exist_ok=True)
     with urllib.request.urlopen(MDI_URL, timeout=30) as response:
         js = response.read().decode("utf-8")
-    cache_file.write_text(js, encoding="utf-8")
+    if not parse_exports(js):
+        raise ValueError(f"no MDI exports found in download: {MDI_URL}")
+
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=cache_dir, delete=False) as temp_file:
+            temp_path = pathlib.Path(temp_file.name)
+            temp_file.write(js)
+        temp_path.replace(cache_file)
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
     return js
 
 
@@ -34,12 +49,18 @@ def extract_icon_names_from_file(path: pathlib.Path) -> set[str]:
 
 def collect_icon_names(shared_root: pathlib.Path, main_site_root: pathlib.Path) -> list[str]:
     icon_names: set[str] = set()
-    razor_files = [*shared_root.rglob("*.razor"), *main_site_root.rglob("*.razor")]
+    source_files = [
+        *shared_root.rglob("*.razor"),
+        *main_site_root.rglob("*.razor"),
+        *shared_root.rglob("*.cs"),
+        *main_site_root.rglob("*.cs"),
+    ]
+    source_files = [path for path in source_files if path.name != "CgMdiIconMap.g.cs"]
 
     # File reading is IO bound, so thread-based parallelism improves throughput.
     max_workers = min(32, max(4, (os.cpu_count() or 1) * 4))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        for names in executor.map(extract_icon_names_from_file, razor_files, chunksize=16):
+        for names in executor.map(extract_icon_names_from_file, source_files, chunksize=16):
             icon_names.update(names)
 
     return sorted(icon_names)
@@ -113,7 +134,7 @@ def main() -> None:
         entries.append((mdi_symbol, path_data))
 
     if unresolved:
-        print(f"skipped non-icon or unresolved names: {', '.join(unresolved)}")
+        raise ValueError(f"non-icon or unresolved names: {', '.join(unresolved)}")
 
     output = build_output(entries)
     if output_file.exists() and output_file.read_text(encoding="utf-8") == output:

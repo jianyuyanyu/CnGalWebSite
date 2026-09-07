@@ -1,7 +1,7 @@
 # Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   identityserveradmin:
-    image: ghcr.io/cngal/cngalwebsiteidentityserveradmin:${IMAGE_TAG:-latest}
+    image: ghcr.io/cngal/cngalwebsite-identityserver-admin:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-identityserveradmin}
     hostname: identityserveradmin
 

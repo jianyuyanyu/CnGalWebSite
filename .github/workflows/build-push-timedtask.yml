@@ -9,7 +9,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsitetimedtask
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsite-timedtask
 
 concurrency:
   group: build-push-timedtask
