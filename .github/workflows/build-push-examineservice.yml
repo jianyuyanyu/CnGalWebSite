@@ -1,37 +1,54 @@
 name: Build and push Examine Service
- 
-on: workflow_dispatch # 手动触发
- 
+
+on:
+  workflow_dispatch: # 手动触发
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsiteexamineservice
+
+concurrency:
+  group: build-push-examineservice
+
 jobs:
   build-and-push:
-      if: ${{ github.ref == 'refs/heads/master' && github.repository == 'CnGal/CnGalWebSite' }}  # 检测master分支是否有更新
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@master
+    if: ${{ github.ref_name == github.event.repository.default_branch }}
+    runs-on: ubuntu-latest
 
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-        - name: Login to DockerHub
-          uses: docker/login-action@v1
-          with:
-            username: ${{ secrets.DOCKERHUB_USERNAME }}
-            password: ${{ secrets.DOCKERHUB_TOKEN }}
-        - name: Generate timestamp tag
-          id: timestamp
-          run: echo "tag=$(date +'%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
-               
-        - name: build Server and push to Dockerhub
-          uses: docker/build-push-action@v3
-          with:
-            context: .
-            file: ./CnGalWebSite/CnGalWebSite.ExamineService/Dockerfile # Dockerfile 位置
-            #platforms: linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64
-            push: true
-            tags: |
-              littlefishtentears/cngalwebsiteexamineservice:latest
-              littlefishtentears/cngalwebsiteexamineservice:${{ steps.timestamp.outputs.tag }}
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Examine Service
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./CnGalWebSite/CnGalWebSite.ExamineService/Dockerfile
+          push: true
+          cache-from: type=gha,scope=examineservice
+          cache-to: type=gha,mode=max,scope=examineservice
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

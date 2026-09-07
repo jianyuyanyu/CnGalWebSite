@@ -1,0 +1,29 @@
+# 仅保留 IdentityServer 构建所需的项目和共享编译配置。
+*
+!CnGalWebSite/
+CnGalWebSite/*
+!CnGalWebSite/.editorconfig
+!CnGalWebSite/CnGalWebSite.IdentityServer/
+!CnGalWebSite/CnGalWebSite.IdentityServer/**
+!CnGalWebSite/CnGalWebSite.Core/
+!CnGalWebSite/CnGalWebSite.Core/**
+!CnGalWebSite/CnGalWebSite.DataModel/
+!CnGalWebSite/CnGalWebSite.DataModel/**
+!CnGalWebSite/CnGalWebSite.Extensions/
+!CnGalWebSite/CnGalWebSite.Extensions/**
+!CnGalWebSite/CnGalWebSite.IdentityServer.Models/
+!CnGalWebSite/CnGalWebSite.IdentityServer.Models/**
+
+# 排除允许目录中的本地构建产物和开发配置。
+**/.dockerignore
+**/.env
+**/.gitignore
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/bin
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/obj
+**/secrets.dev.yaml

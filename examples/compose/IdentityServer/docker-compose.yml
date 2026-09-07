@@ -1,17 +1,24 @@
+# Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
-  apiserver:
-    image: littlefishtentears/cngalwebsiteidentityserver:${IMAGE_TAG:-latest}
-    container_name: identityserver
+  identityserver:
+    image: ghcr.io/cngal/cngalwebsiteidentityserver:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-identityserver}
     hostname: identityserver
+
     restart: unless-stopped
 
-    networks:
-      - web
+    pre_start:
+      - image: busybox
+        command: ["chown", "-R", "1654:1654", "/home/app/.aspnet/DataProtection-Keys", "/app/cert"]
+        user: root
 
     ports:
-      - ${PORT:-5011}:8080
-      # - 5001:8081
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-5011}:8080"
+      # - "${BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-5001}:8081"
 
+    # env_file:
+    #   - path: .env
+    #     required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       DefaultDBConnection: ${DefaultDBConnection}
@@ -69,28 +76,20 @@ services:
       QQClientId: ${QQClientId}
       QQClientSecret: ${QQClientSecret}
 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-    volumes:
-      - DataProtection-Keys:/root/.aspnet/DataProtection-Keys
-      - ${MNT_DIR:-/mnt/docker}/IdentityServer:/app/cert
-
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/healthz"]
+
+    volumes:
+      - ${DATA_PROTECTION_KEYS_DIR:-DataProtection-Keys}:/home/app/.aspnet/DataProtection-Keys
+      - ${MNT_DIR:-/mnt/docker}/IdentityServer:/app/cert
 
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-500m}
-
-networks:
-  web:
-    external: true
 
 volumes:
   DataProtection-Keys:

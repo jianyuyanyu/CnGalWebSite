@@ -1,48 +1,49 @@
+# Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   timedtask:
-    image: littlefishtentears/cngalwebsitetimedtask:${IMAGE_TAG:-latest}
-    container_name: timedtask
-    environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      # Ids 地址
-      - Authority=${Authority:-https://oauth2.cngal.org}
-      # 数据库连接字符串
-      - DefaultDBConnection=${DefaultDBConnection}
-      # 事件总线
-      - EventBus_HostName=${EventBus_HostName}
-      - EventBus_Port=${EventBus_Port:-5672}
-      - EventBus_UserName=${EventBus_UserName}
-      - EventBus_Password=${EventBus_Password}
+    image: ghcr.io/cngal/cngalwebsitetimedtask:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-timedtask}
     hostname: timedtask
-    restart: always
+
+    restart: unless-stopped
+
+    pre_start:
+      - image: busybox
+        command: ["chown", "-R", "1654:1654", "/home/app/.aspnet/DataProtection-Keys"]
+        user: root
+
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-2009}:8080"
+      # - "${BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-3009}:8081"
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      # Ids 地址
+      Authority: ${Authority:-https://oauth2.cngal.org}
+      # 数据库连接字符串
+      DefaultDBConnection: ${DefaultDBConnection}
+      # 事件总线
+      EventBus_HostName: ${EventBus_HostName}
+      EventBus_Port: ${EventBus_Port:-5672}
+      EventBus_UserName: ${EventBus_UserName}
+      EventBus_Password: ${EventBus_Password}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/healthz"]
+
     volumes:
-      - DataProtection-Keys:/home/app/.aspnet/DataProtection-Keys
+      - ${DATA_PROTECTION_KEYS_DIR:-DataProtection-Keys}:/home/app/.aspnet/DataProtection-Keys
+
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-200m}
-    ports:
-      - "${PORT:-2009}:8080"
-      # - "3009:8081"
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
 
 volumes:
   DataProtection-Keys:
-
-networks:
-  web:
-    external: true
