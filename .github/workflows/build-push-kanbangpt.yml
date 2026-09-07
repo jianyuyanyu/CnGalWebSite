@@ -9,7 +9,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsitekanbangpt
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsite-kanbangpt
 
 concurrency:
   group: build-push-kanbangpt

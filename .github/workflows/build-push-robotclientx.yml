@@ -9,7 +9,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsiterobotclientx
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsite-robotclientx
 
 concurrency:
   group: build-push-robotclientx

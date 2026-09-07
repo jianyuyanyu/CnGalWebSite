@@ -9,7 +9,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsiteexamineservice
+  IMAGE_NAME: ${{ github.repository_owner }}/cngalwebsite-examineservice
 
 concurrency:
   group: build-push-examineservice

@@ -1,7 +1,7 @@
 # Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   expo:
-    image: ghcr.io/cngal/cngalwebsiteexpo:${IMAGE_TAG:-latest}
+    image: ghcr.io/cngal/cngalwebsite-expo:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-expo}
     hostname: expo
 

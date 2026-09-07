@@ -1,7 +1,7 @@
 # Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   apiserver:
-    image: ghcr.io/cngal/cngalwebsiteapiserver:${IMAGE_TAG:-latest}
+    image: ghcr.io/cngal/cngalwebsite-apiserver:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-apiserver}
     hostname: apiserver
 

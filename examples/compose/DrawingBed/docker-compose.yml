@@ -1,7 +1,7 @@
 # Requires Docker Compose 5.4.0+ for pre_start hook image resolution.
 services:
   drawingbed:
-    image: ghcr.io/cngal/cngalwebsitedrawingbed:${IMAGE_TAG:-latest}
+    image: ghcr.io/cngal/cngalwebsite-drawingbed:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-drawingbed}
     hostname: drawingbed
 

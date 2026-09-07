@@ -1,6 +1,6 @@
 services:
   examineservice:
-    image: ghcr.io/cngal/cngalwebsiteexamineservice:${IMAGE_TAG:-latest}
+    image: ghcr.io/cngal/cngalwebsite-examineservice:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-examineservice}
     hostname: examineservice
 
