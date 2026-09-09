@@ -125,7 +125,7 @@ namespace CnGalWebSite.APIServer.Controllers
             }
             //初始化主页Html代码
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseSoftlineBreakAsHardlineBreak().Build();
-            model.MainPage = Markdown.ToHtml(model.MainPage ?? "", pipeline);
+            model.MainPage = HtmlSanitizerHelper.Sanitize(Markdown.ToHtml(model.MainPage ?? "", pipeline));
 
             foreach (var item in vote.Entries)
             {

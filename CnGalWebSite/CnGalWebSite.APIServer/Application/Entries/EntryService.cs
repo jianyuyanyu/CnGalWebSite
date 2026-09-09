@@ -1178,7 +1178,7 @@ namespace CnGalWebSite.APIServer.Application.Entries
                 {
                     Icon = "mdi-card-account-details-outline",
                     Name = "别称",
-                    Value = model.AnotherName,
+                    Value = HtmlSanitizerHelper.Sanitize(model.AnotherName),
                 });
             }
             //添加角色CV
@@ -1199,7 +1199,7 @@ namespace CnGalWebSite.APIServer.Application.Entries
                     {
                         Icon = "mdi-microphone",
                         Name = "配音",
-                        Value = cvs.ToString()
+                        Value = HtmlSanitizerHelper.Sanitize(cvs.ToString())
                     });
                 }
 
@@ -1216,11 +1216,11 @@ namespace CnGalWebSite.APIServer.Application.Entries
                     {
                         Icon = info.Icon,
                         Name = item.DisplayName,
-                        Value = item.DisplayValue
+                        Value = HtmlSanitizerHelper.Sanitize(item.DisplayValue)
                     };
                     if(temp.Name== "QQ群")
                     {
-                        temp.Value = QQGroupRegex().Replace(temp.Value, "<b>$1</b>");
+                        temp.Value = HtmlSanitizerHelper.Sanitize(QQGroupRegex().Replace(temp.Value, "<b>$1</b>"));
                     }
                     model.Information.Add(temp);
                 }
@@ -1242,11 +1242,11 @@ namespace CnGalWebSite.APIServer.Application.Entries
                     {
                         Name = model.Information.Any(s => s.Name == "QQ群") ? item.DisplayName : "QQ群",
                         Icon = model.Information.Any(s => s.Name == "QQ群") ? "mdi-vector-point" : qqIcon,
-                        Value = model.Information.Any(s => s.Name == "QQ群") ? item.Information.FirstOrDefault(s => s.DisplayName == "QQ群").DisplayValue : $"{item.Information.FirstOrDefault(s => s.DisplayName == "QQ群").DisplayValue} ({item.DisplayName})"
+                        Value = HtmlSanitizerHelper.Sanitize(model.Information.Any(s => s.Name == "QQ群") ? item.Information.FirstOrDefault(s => s.DisplayName == "QQ群").DisplayValue : $"{item.Information.FirstOrDefault(s => s.DisplayName == "QQ群").DisplayValue} ({item.DisplayName})")
                     };
 
 
-                    temp.Value = QQGroupRegex().Replace(temp.Value, "<b>$1</b>");
+                    temp.Value = HtmlSanitizerHelper.Sanitize(QQGroupRegex().Replace(temp.Value, "<b>$1</b>"));
                     model.Information.Add(temp);
                 }
             }

@@ -225,7 +225,7 @@ namespace CnGalWebSite.APIServer.Application.Examines
 
         public async Task<bool> GetExamineView(ExamineViewModel model, Examine examine)
         {
-            return examine.Operation switch
+            var success = examine.Operation switch
             {
                 Operation.UserMainPage => GetUserMainPageExamineView(model, examine),
                 Operation.EditUserMain => await GetEditUserMainExamineView(model, examine),
@@ -259,6 +259,15 @@ namespace CnGalWebSite.APIServer.Application.Examines
                 Operation.EstablishWebsite => await GetEstablishWebsiteExamineView(model, examine),
                 _ => false,
             };
+            if (success)
+            {
+                model.EditOverview = HtmlSanitizerHelper.Sanitize(model.EditOverview);
+                if (model.BeforeModel != null)
+                    model.BeforeModel.MainPage = HtmlSanitizerHelper.Sanitize(model.BeforeModel.MainPage);
+                if (model.AfterModel != null)
+                    model.AfterModel.MainPage = HtmlSanitizerHelper.Sanitize(model.AfterModel.MainPage);
+            }
+            return success;
         }
 
         public async Task<List<ExaminedNormalListModel>> GetExaminesToNormalListAsync(IQueryable<Examine> examines, bool isShowRanks)

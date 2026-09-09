@@ -91,16 +91,14 @@
 
         @* ── HTML 编辑区 ── *@
         <CgAlert Variant="warning">
-            SSR模式下会拦截不受信任的源和内联脚本，请与管理员联系以添加脚本
+            HTML 预览在隔离环境中显示，不执行脚本，也不继承主站样式。
         </CgAlert>
 
         <CgFormGroup Label="自定义 Html（将会覆盖整个页面）">
             <CgTextarea @bind-Value="Model.Html" Placeholder="在此输入自定义的网页 HTML 代码" Rows="6" Monospace />
             @if (!string.IsNullOrWhiteSpace(Model.Html))
             {
-                <div class="cg-html-preview">
-                    @((MarkupString)Model.Html)
-                </div>
+                <iframe class="cg-html-preview" title="自定义页面预览" sandbox="" srcdoc="@Model.Html"></iframe>
             }
         </CgFormGroup>
 
@@ -108,9 +106,7 @@
             <CgTextarea @bind-Value="Model.FirstPage" Placeholder="可选，覆盖专题首页内容" Rows="5" Monospace />
             @if (!string.IsNullOrWhiteSpace(Model.FirstPage))
             {
-                <div class="cg-html-preview">
-                    @((MarkupString)Model.FirstPage)
-                </div>
+                <iframe class="cg-html-preview" title="自定义首页预览" sandbox="" srcdoc="@Model.FirstPage"></iframe>
             }
         </CgFormGroup>
 
@@ -118,9 +114,7 @@
             <CgTextarea @bind-Value="Model.Introduction" Placeholder="可选，覆盖专题介绍内容" Rows="5" Monospace />
             @if (!string.IsNullOrWhiteSpace(Model.Introduction))
             {
-                <div class="cg-html-preview">
-                    @((MarkupString)Model.Introduction)
-                </div>
+                <iframe class="cg-html-preview" title="自定义介绍预览" sandbox="" srcdoc="@Model.Introduction"></iframe>
             }
         </CgFormGroup>
     }

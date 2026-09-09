@@ -629,7 +629,7 @@ namespace CnGalWebSite.APIServer.Application.Helper
                 .UseFigures().Build();
             var html = Markdown.ToHtml(sb.ToString(), pipeline);
             html = AddLazyLoading(html);
-            return html;
+            return HtmlSanitizerHelper.Sanitize(html);
         }
 
         private string AddLazyLoading(string html)

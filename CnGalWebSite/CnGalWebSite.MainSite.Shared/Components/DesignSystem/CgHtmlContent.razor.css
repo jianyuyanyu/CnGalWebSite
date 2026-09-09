@@ -72,6 +72,30 @@
     margin: 1em 0;
 }
 
+.cg-html-content ::deep video,
+.cg-html-content ::deep audio {
+    max-width: 100%;
+}
+
+.cg-html-content ::deep video {
+    height: auto;
+}
+
+.cg-html-content ::deep .aspect-ratio {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56%;
+}
+
+.cg-html-content ::deep .aspect-ratio iframe {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
 /* ── 行内代码 ── */
 .cg-html-content ::deep code {
     background: var(--cg-color-section-bg);
