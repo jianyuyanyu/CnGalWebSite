@@ -22,7 +22,8 @@
                    href="@solo.Link"
                    target="@(IsExternalLink(solo.Link) ? "_blank" : null)"
                    rel="@(IsExternalLink(solo.Link) ? "noopener noreferrer" : null)"
-                   aria-label="@solo.Alt">
+                   aria-label="@solo.Alt"
+                   data-cg-track-slot="@TrackSlot">
                     <img class="cg-carousel__image"
                          src="@solo.Image"
                          alt="@solo.Alt"
@@ -61,7 +62,8 @@
                            href="@item.Link"
                            target="@(IsExternalLink(item.Link) ? "_blank" : null)"
                            rel="@(IsExternalLink(item.Link) ? "noopener noreferrer" : null)"
-                           aria-label="@item.Alt">
+                           aria-label="@item.Alt"
+                           data-cg-track-slot="@TrackSlot">
                             <img class="cg-carousel__image"
                                  src="@item.Image"
                                  alt="@item.Alt"
@@ -127,6 +129,10 @@
     /// <summary>图片原始高度（性能提示）</summary>
     [Parameter]
     public int ImageHeight { get; set; } = 400;
+
+    /// <summary>点击埋点位（data-cg-track-slot），为空时不输出属性</summary>
+    [Parameter]
+    public string? TrackSlot { get; set; }
 
     /// <summary>轮播项数据模型</summary>
     public record CgCarouselItem(string Image, string? Link, string? Alt);

@@ -271,6 +271,7 @@
 <AuthorizeView>
     <Authorized>
         <KanbanToggleContainer />
+        <TrackingMeta UserId="@context.User.Claims.GetUserId()" />
         <CgToast @rendermode="InteractiveServer" />
         <CnGalWebSite.MainSite.Shared.Components.Layout.UserSessionTracker @rendermode="InteractiveServer" />
     </Authorized>

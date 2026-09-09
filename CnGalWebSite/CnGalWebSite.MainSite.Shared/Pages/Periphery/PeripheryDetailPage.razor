@@ -22,6 +22,8 @@
 }
 else if (_model is not null)
 {
+    <TrackingMeta Type="periphery" Id="@_model.Id.ToString()" Name="@_model.Name" />
+
     <article class="periphery-page">
         @if (HasAtmosphere())
         {

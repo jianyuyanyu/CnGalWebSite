@@ -1,0 +1,18 @@
+@if (!string.IsNullOrEmpty(Type) && !string.IsNullOrEmpty(Id))
+{
+    <span hidden data-cg-track-view
+          data-cg-track-type="@Type"
+          data-cg-track-id="@Id"
+          data-cg-track-name="@Name"></span>
+}
+@if (!string.IsNullOrEmpty(UserId))
+{
+    <span hidden data-cg-track-user data-cg-track-user-id="@UserId"></span>
+}
+
+@code {
+    [Parameter] public string Type { get; set; } = "";   // entry/article/video/tag/space/periphery/lottery/favorite-folder
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? UserId { get; set; }      // "sub" claim
+}
