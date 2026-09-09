@@ -1,7 +1,8 @@
 <li class="home-card home-banner">
     <a href="@Link"
        target="@(IsExternalLink(Link) ? "_blank" : null)"
-       rel="@(IsExternalLink(Link) ? "noopener noreferrer" : null)">
+       rel="@(IsExternalLink(Link) ? "noopener noreferrer" : null)"
+       data-cg-track-slot="carousel">
         <img src="@Image" alt="@Note" loading="lazy" decoding="async" />
     </a>
 </li>

@@ -19,6 +19,7 @@
 @if (_model is not null)
 {
     <CgStructuredData Data="@GenerateStructuredDataJson()" />
+    <TrackingMeta Type="article" Id="@_model.Id.ToString()" Name="@_model.Name" />
 }
 
 @if (_errorMessage is not null)

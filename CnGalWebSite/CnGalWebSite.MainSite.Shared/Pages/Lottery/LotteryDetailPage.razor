@@ -19,6 +19,8 @@
 }
 else if (_model is not null)
 {
+    <TrackingMeta Type="lottery" Id="@_model.Id.ToString()" Name="@_model.Name" />
+
     <article class="lottery-page">
         @if (HasAtmosphere())
         {

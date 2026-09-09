@@ -8,7 +8,7 @@
         var desc = GetExternalLinkDescription(item);
         
         <li>
-            <a href="@item.Link" target="_blank" rel="noopener noreferrer" class="entry-outlink-item">
+            <a href="@item.Link" target="_blank" rel="noopener noreferrer" class="entry-outlink-item" data-cg-track-slot="outlink" data-cg-track-name="@title">
                 <div class="entry-outlink-item-icon">
                     @if (string.IsNullOrWhiteSpace(GetExternalLinkImage(item.DisplayName)) == false)
                     {

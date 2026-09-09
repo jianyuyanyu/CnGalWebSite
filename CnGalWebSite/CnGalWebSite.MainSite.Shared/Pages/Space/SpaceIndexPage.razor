@@ -39,6 +39,7 @@ else if (_isNotFound)
 else if (_model != null)
 {
     <CgPageMeta Title="@($"{_model.Name} - 个人空间")" Description="@(_model.PersonalSignature)" Image="@(_model.PhotoPath)" />
+    <TrackingMeta Type="space" Id="@_model.Id" Name="@_model.Name" />
 
     <div class="cg-space-container">
         <div class="cg-space-layout-row">

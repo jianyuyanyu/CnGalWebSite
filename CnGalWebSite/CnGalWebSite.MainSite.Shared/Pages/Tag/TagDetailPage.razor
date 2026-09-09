@@ -11,6 +11,11 @@
 
 <CgPageMeta Title="@(_model?.Name)" Description="@(_model?.BriefIntroduction)" Image="@(_model?.MainPicture)" />
 
+@if (_model is not null)
+{
+    <TrackingMeta Type="tag" Id="@_model.Id.ToString()" Name="@_model.Name" />
+}
+
 @if (_errorMessage is not null)
 {
     <section class="tag-not-found">

@@ -108,4 +108,11 @@ export function afterWebStarted(blazor) {
     });
     installImeInputListeners();
     document[installationKey] = true;
+
+    import('./scripts/umami-track.js')
+        .then(function (m) {
+            m.install();
+            blazor.addEventListener('enhancedload', function () { m.refresh(); });
+        })
+        .catch(function () { /* 埋点加载失败不影响页面 */ });
 }

@@ -1,5 +1,5 @@
 <li class="home-news-card @(DevStyle ? "home-news-card--dev" : string.Empty)">
-    <a href="@Url" target="@Target" class="home-news-card-link">
+    <a href="@Url" target="@Target" class="home-news-card-link" data-cg-track-slot="news" data-cg-track-name="@Title">
         @if (!string.IsNullOrWhiteSpace(Image))
         {
             <div class="home-news-card-image">

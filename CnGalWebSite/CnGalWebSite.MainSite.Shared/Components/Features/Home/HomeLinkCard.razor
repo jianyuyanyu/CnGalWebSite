@@ -1,5 +1,5 @@
 <li class="home-card @(CommunityStyle ? "home-card--community" : string.Empty)">
-    <a href="@Url" target="@Target" rel="noopener noreferrer">
+    <a href="@Url" target="@Target" rel="noopener noreferrer" data-cg-track-slot="link">
         @if (CommunityStyle)
         {
             <span class="home-card-community-icon @(GetToneClass())">
