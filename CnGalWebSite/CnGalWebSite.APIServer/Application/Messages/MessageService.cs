@@ -1,5 +1,6 @@
 ﻿
 using CnGalWebSite.APIServer.Application.Users.Dtos;
+using CnGalWebSite.APIServer.Application.Helper;
 using CnGalWebSite.APIServer.DataReositories;
 
 using CnGalWebSite.DataModel.ViewModel.Admin;
@@ -64,7 +65,7 @@ namespace CnGalWebSite.APIServer.Application.Messages
                 //提前将MarkDown语法转为Html
 
                 var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseSoftlineBreakAsHardlineBreak().Build();
-                item.Text = Markdig.Markdown.ToHtml(item.Text ?? "", pipeline);
+                item.Text = HtmlSanitizerHelper.Sanitize(Markdig.Markdown.ToHtml(item.Text ?? "", pipeline));
             }
 
             var dtos = new PagedResultDto<DataModel.Model.Message>

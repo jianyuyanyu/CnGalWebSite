@@ -210,7 +210,7 @@ namespace CnGalWebSite.APIServer.Controllers
             };
             //初始化主页Html代码
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseSoftlineBreakAsHardlineBreak().Build();
-            model.MainPage = Markdown.ToHtml(model.MainPage ?? "", pipeline);
+            model.MainPage = HtmlSanitizerHelper.Sanitize(Markdown.ToHtml(model.MainPage ?? "", pipeline));
 
             //可能需要添加检测抽奖是否结束
             foreach (var item in lottery.Awards.OrderByDescending(s => s.Priority))

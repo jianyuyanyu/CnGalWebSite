@@ -1244,7 +1244,7 @@ namespace CnGalWebSite.APIServer.Controllers
                 foreach (var infor in item.Articles)
                 {
                     var infor1 = _appHelper.GetArticleInforTipViewModel(infor);
-                    infor1.BriefIntroduction = Markdown.ToHtml(infor.MainPage ?? "", pipeline);
+                    infor1.BriefIntroduction = HtmlSanitizerHelper.Sanitize(Markdown.ToHtml(infor.MainPage ?? "", pipeline));
 
                     temp.Evaluations.Add(infor1);
                 }

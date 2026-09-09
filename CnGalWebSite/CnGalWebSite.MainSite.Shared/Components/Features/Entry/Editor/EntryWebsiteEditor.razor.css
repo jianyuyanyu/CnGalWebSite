@@ -27,6 +27,8 @@
 
 /* ── HTML 预览 ── */
 .cg-html-preview {
+    width: 100%;
+    height: 400px;
     margin-top: var(--cg-spacing-3);
     padding: var(--cg-spacing-4);
     border: 1px solid var(--cg-color-border);
